@@ -31,16 +31,6 @@ const navItems = [
     icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
   },
   {
-    name: 'Coupons',
-    href: '/dashboard/coupons',
-    icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M13 5v2" /><path d="M13 17v2" /><path d="M13 11v2" /></svg>
-  },
-  {
-    name: 'Testimonials',
-    href: '/dashboard/testimonials',
-    icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-  },
-  {
     name: 'Customers',
     href: '/dashboard/customers',
     icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
@@ -49,11 +39,6 @@ const navItems = [
     name: 'Contacts',
     href: '/dashboard/contacts',
     icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-  },
-  {
-    name: 'FAQs',
-    href: '/dashboard/faqs',
-    icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
   },
 ];
 
@@ -77,7 +62,7 @@ function SidebarNav({ onNavClick, onLogout }: { onNavClick: () => void; onLogout
                 href={item.href}
                 onClick={onNavClick}
                 className={`flex items-center justify-between px-4 py-[14px] rounded-[14px] transition-colors ${isActive
-                    ? 'bg-blue-600 text-white font-semibold'
+                    ? 'bg-[#5b3db8] text-white font-semibold'
                     : 'text-slate-400 hover:text-white font-medium'
                   }`}
               >
@@ -119,12 +104,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
       {/* ===== DESKTOP SIDEBAR (always visible, in-flow) ===== */}
-      <aside className="hidden lg:flex w-[260px] bg-[#0f172a] text-slate-300 flex-col shrink-0">
+      <aside className="hidden lg:flex w-[260px] bg-[#372a5e] text-slate-300 flex-col shrink-0">
         <div className="flex items-center gap-4 h-[100px] px-8 shrink-0">
-          <div className="w-[42px] h-[42px] rounded-xl bg-blue-500 flex items-center justify-center text-white font-bold text-xl shrink-0">
-            H
+          <div className="w-[42px] h-[42px] rounded-xl bg-[#5b3db8] flex items-center justify-center text-white font-bold text-xl shrink-0">
+            N
           </div>
-          <h1 className="text-[17px] font-bold text-white tracking-wide">HEEDY ADMIN</h1>
+          <h1 className="text-[17px] font-bold text-white tracking-wide">NEOKART ADMIN</h1>
         </div>
         <SidebarNav onNavClick={() => { }} onLogout={handleLogout} />
       </aside>
@@ -139,15 +124,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Drawer */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-[#0f172a] text-slate-300 flex flex-col transition-transform duration-300 ease-in-out lg:hidden ${isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 w-[260px] bg-[#372a5e] text-slate-300 flex flex-col transition-transform duration-300 ease-in-out lg:hidden ${isOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
       >
         <div className="flex items-center justify-between h-[72px] px-6 shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-[42px] h-[42px] rounded-xl bg-blue-500 flex items-center justify-center text-white font-bold text-xl shrink-0">
-              H
+            <div className="w-[42px] h-[42px] rounded-xl bg-[#5b3db8] flex items-center justify-center text-white font-bold text-xl shrink-0">
+              N
             </div>
-            <h1 className="text-[17px] font-bold text-white tracking-wide">HEEDY ADMIN</h1>
+            <h1 className="text-[17px] font-bold text-white tracking-wide">NEOKART ADMIN</h1>
           </div>
           <button
             onClick={onClose}

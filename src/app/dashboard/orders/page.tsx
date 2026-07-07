@@ -100,7 +100,7 @@ export default function OrdersPage() {
       case 'processing':
         return 'bg-[#e0e7ff] text-[#4f46e5]';
       case 'shipped':
-        return 'bg-[#dbeafe] text-[#2563eb]';
+        return 'bg-[#dbeafe] text-[#5b3db8]';
       case 'cancelled':
         return 'bg-[#fee2e2] text-[#dc2626]';
       default:
@@ -146,7 +146,7 @@ export default function OrdersPage() {
   if (loading) {
     return (
       <div className="max-w-[1600px] mx-auto mt-2 pb-12 flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#5b3db8]"></div>
       </div>
     );
   }
@@ -221,7 +221,7 @@ export default function OrdersPage() {
                       <td className="py-5 px-6">
                         <button
                           onClick={() => setSelectedOrder(order._id)}
-                          className="text-[#3b82f6] hover:text-blue-700 transition-colors flex items-center justify-center p-2 rounded-full hover:bg-blue-50"
+                          className="text-[#5b3db8] hover:text-[#4a2f96] transition-colors flex items-center justify-center p-2 rounded-full hover:bg-[#f4f1fb]"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                         </button>
@@ -335,7 +335,7 @@ export default function OrdersPage() {
             {/* Total Footer */}
             <div className="px-6 lg:px-8 py-6 shrink-0 flex items-center justify-between border-t border-slate-100">
               <span className="text-[16px] font-bold text-[#111827]">Total Amount:</span>
-              <span className="text-[18px] font-bold text-[#2563eb]">₹{activeOrder.total}</span>
+              <span className="text-[18px] font-bold text-[#5b3db8]">₹{activeOrder.total}</span>
             </div>
           </div>
         )}

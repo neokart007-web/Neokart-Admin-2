@@ -17,8 +17,6 @@ interface DashboardStats {
   totalProducts: number;
   totalCategories: number;
   totalBanners: number;
-  totalCoupons: number;
-  totalTestimonials: number;
   totalCustomers: number;
   recentOrders: RecentOrder[];
 }
@@ -53,7 +51,7 @@ export default function DashboardPage() {
     switch (status.toLowerCase()) {
       case 'delivered': return 'bg-[#dcfce7] text-[#16a34a]';
       case 'processing': return 'bg-[#e0e7ff] text-[#4f46e5]';
-      case 'shipped': return 'bg-[#dbeafe] text-[#2563eb]';
+      case 'shipped': return 'bg-[#dbeafe] text-[#5b3db8]';
       case 'cancelled': return 'bg-[#fee2e2] text-[#dc2626]';
       default: return 'bg-slate-100 text-slate-600';
     }
@@ -65,8 +63,6 @@ export default function DashboardPage() {
   console.log("total products : ", stats?.totalProducts)
   console.log("total categories : ", stats?.totalCategories)
   console.log("total banners : ", stats?.totalBanners)
-  console.log("total coupons : ", stats?.totalCoupons)
-  console.log("total testimonials : ", stats?.totalTestimonials)
   console.log("total customers : ", stats?.totalCustomers)
   const cards = [
     {
@@ -115,24 +111,6 @@ export default function DashboardPage() {
       iconColor: 'text-[#c026d3]'
     },
     {
-      label: 'Coupons',
-      value: stats ? String(stats.totalCoupons) : '...',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>
-      ),
-      iconBg: 'bg-[#ffedd5]',
-      iconColor: 'text-[#ea580c]'
-    },
-    {
-      label: 'Testimonials',
-      value: stats ? String(stats.totalTestimonials) : '...',
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-      ),
-      iconBg: 'bg-transparent',
-      iconColor: 'text-[#111827]'
-    },
-    {
       label: 'Customers',
       value: stats ? String(stats.totalCustomers) : '...',
       icon: (
@@ -146,7 +124,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="max-w-[1200px] mx-auto mt-2 pb-12 flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#5b3db8]"></div>
       </div>
     );
   }
@@ -170,7 +148,7 @@ export default function DashboardPage() {
       <div className="mt-8 bg-white rounded-[24px] p-8 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] border border-slate-100/60">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-[20px] font-bold text-[#111827]">Recent Transactions</h2>
-          <a href="/dashboard/orders" className="text-[15px] font-bold text-[#3b60f6] hover:text-blue-700">View All</a>
+          <a href="/dashboard/orders" className="text-[15px] font-bold text-[#5b3db8] hover:text-[#4a2f96]">View All</a>
         </div>
 
         <div className="overflow-x-auto">

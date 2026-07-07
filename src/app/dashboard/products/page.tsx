@@ -48,7 +48,7 @@ export default function ProductsPage() {
   const [imageUrls, setImageUrls] = useState('');
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
-  const [variants, setVariants] = useState<IVariant[]>([{ volume: '50ml', price: 0, oldPrice: 0 }]);
+  const [variants, setVariants] = useState<IVariant[]>([{ volume: '1', price: 0, oldPrice: 0 }]);
 
   // Fetch Products
   const fetchProducts = async () => {
@@ -100,7 +100,7 @@ export default function ProductsPage() {
     setImageUrls('');
     setImageFiles([]);
     setPreviewUrls([]);
-    setVariants([{ volume: '50ml', price: 0, oldPrice: 0 }]);
+    setVariants([{ volume: '1', price: 0, oldPrice: 0 }]);
     setIsAddProductOpen(true);
   };
 
@@ -128,7 +128,7 @@ export default function ProductsPage() {
 
   // Handle Add Variant
   const handleAddVariant = () => {
-    setVariants([...variants, { volume: '100ml', price: 0, oldPrice: 0 }]);
+    setVariants([...variants, { volume: '2', price: 0, oldPrice: 0 }]);
   };
 
   const handleVariantChange = (index: number, field: keyof IVariant, value: string | number) => {
@@ -177,7 +177,7 @@ export default function ProductsPage() {
 
     for (let i = 0; i < variants.length; i++) {
       const v = variants[i];
-      if (!v.volume.trim()) return toast.error(`Variant ${i + 1}: Size/Vol is required.`);
+      if (!v.volume.trim()) return toast.error(`Variant ${i + 1}: Quantity is required.`);
       if (v.price <= 0) return toast.error(`Variant ${i + 1}: Offer Price must be greater than zero.`);
       if (v.oldPrice && v.oldPrice > 0 && v.oldPrice < v.price) {
         return toast.error(`Variant ${i + 1}: Actual Price (₹${v.oldPrice}) cannot be less than Offer Price (₹${v.price}).`);
@@ -285,7 +285,7 @@ export default function ProductsPage() {
             {!isAddProductOpen ? (
               <button 
                 onClick={openAddForm}
-                className="bg-[#3b60f6] hover:bg-blue-700 text-white px-5 py-2.5 rounded-[12px] font-medium text-[15px] flex items-center gap-2 transition-colors"
+                className="bg-[#5b3db8] hover:bg-[#4a2f96] text-white px-5 py-2.5 rounded-[12px] font-medium text-[15px] flex items-center gap-2 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 Add New Product
@@ -336,7 +336,7 @@ export default function ProductsPage() {
                     <td className="py-5 px-6">
                       {product.variants.length > 0 ? (
                         <div className="flex flex-col">
-                          <span className="text-[15px] font-bold text-[#3b60f6]">₹{product.variants[0].price}</span>
+                          <span className="text-[15px] font-bold text-[#5b3db8]">₹{product.variants[0].price}</span>
                           {product.variants[0].oldPrice && (
                             <span className="text-[13px] font-medium text-slate-400 line-through">₹{product.variants[0].oldPrice}</span>
                           )}
@@ -355,7 +355,7 @@ export default function ProductsPage() {
                       <div className="flex items-center gap-3">
                         <button 
                           onClick={() => handleEdit(product)}
-                          className="w-[38px] h-[38px] rounded-[10px] bg-[#eff6ff] text-[#3b82f6] hover:bg-blue-100 flex items-center justify-center transition-colors"
+                          className="w-[38px] h-[38px] rounded-[10px] bg-[#eff6ff] text-[#5b3db8] hover:bg-[#ece7f8] flex items-center justify-center transition-colors"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                         </button>
@@ -391,14 +391,14 @@ export default function ProductsPage() {
               {/* Product Name */}
               <div>
                 <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Product Name</label>
-                <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-[15px]" />
+                <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all text-[15px]" />
               </div>
 
               {/* Category */}
               <div>
                 <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Category</label>
                 <div className="relative">
-                  <select value={category} onChange={e => setCategory(e.target.value)} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all appearance-none text-[15px] text-slate-700">
+                  <select value={category} onChange={e => setCategory(e.target.value)} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all appearance-none text-[15px] text-slate-700">
                     {dbCategories.filter(c => c.status === 'ACTIVE').map(c => (
                       <option key={c._id} value={c.name}>{c.name}</option>
                     ))}
@@ -416,7 +416,7 @@ export default function ProductsPage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <label className="block text-[14px] font-bold text-slate-900">Product Variants</label>
-                  <button onClick={handleAddVariant} className="bg-[#3b60f6] hover:bg-blue-700 text-white px-3 py-1.5 rounded-[8px] text-[13px] font-semibold flex items-center gap-1.5 transition-colors">
+                  <button onClick={handleAddVariant} className="bg-[#5b3db8] hover:bg-[#4a2f96] text-white px-3 py-1.5 rounded-[8px] text-[13px] font-semibold flex items-center gap-1.5 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Add Variant
                   </button>
@@ -424,7 +424,7 @@ export default function ProductsPage() {
                 
                 {/* Variant Headers */}
                 <div className="flex gap-2 mb-2 px-3">
-                  <div className="flex-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Size / Vol</div>
+                  <div className="flex-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Quantity</div>
                   <div className="flex-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Offer Price</div>
                   <div className="flex-1 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Actual Price</div>
 
@@ -437,9 +437,9 @@ export default function ProductsPage() {
                     return (
                       <div key={i} className="flex flex-col gap-1">
                         <div className={`flex gap-2 items-center bg-slate-50 p-2 rounded-[12px] border ${priceError ? 'border-red-200' : 'border-slate-100'}`}>
-                          <input type="text" placeholder="e.g. 50ml" value={v.volume} onChange={(e) => handleVariantChange(i, 'volume', e.target.value)} className="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-[14px] transition-all bg-white" />
-                          <input type="number" placeholder="₹ Offer" value={v.price === 0 ? '' : v.price} onChange={(e) => handleVariantChange(i, 'price', Number(e.target.value))} className={`flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border outline-none text-[14px] transition-all bg-white ${priceError ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-red-600 bg-red-50/30' : 'border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'}`} />
-                          <input type="number" placeholder="₹ Actual" value={v.oldPrice === 0 ? '' : v.oldPrice} onChange={(e) => handleVariantChange(i, 'oldPrice', Number(e.target.value))} className={`flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border outline-none text-[14px] transition-all bg-white ${priceError ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-red-600 bg-red-50/30' : 'border-slate-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'}`} />
+                          <input type="text" placeholder="e.g. 1" value={v.volume} onChange={(e) => handleVariantChange(i, 'volume', e.target.value)} className="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8] outline-none text-[14px] transition-all bg-white" />
+                          <input type="number" placeholder="₹ Offer" value={v.price === 0 ? '' : v.price} onChange={(e) => handleVariantChange(i, 'price', Number(e.target.value))} className={`flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border outline-none text-[14px] transition-all bg-white ${priceError ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-red-600 bg-red-50/30' : 'border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8]'}`} />
+                          <input type="number" placeholder="₹ Actual" value={v.oldPrice === 0 ? '' : v.oldPrice} onChange={(e) => handleVariantChange(i, 'oldPrice', Number(e.target.value))} className={`flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border outline-none text-[14px] transition-all bg-white ${priceError ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-red-600 bg-red-50/30' : 'border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8]'}`} />
 
                           {variants.length > 1 && (
                             <button onClick={() => handleRemoveVariant(i)} className="w-8 h-[42px] shrink-0 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-[8px] transition-colors">
@@ -461,30 +461,30 @@ export default function ProductsPage() {
               {/* Description */}
               <div>
                 <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Description</label>
-                <textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full h-[120px] p-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-[15px]"></textarea>
+                <textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full h-[120px] p-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all resize-none text-[15px]"></textarea>
               </div>
 
               {/* Star Rating & Reviews */}
               <div className="flex gap-4">
                 <div className="flex-1">
                   <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Star Rating</label>
-                  <input type="number" max="5" min="0" step="0.1" value={starRating} onChange={e => setStarRating(e.target.value === '' ? '' : Number(e.target.value))} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-[15px]" />
+                  <input type="number" max="5" min="0" step="0.1" value={starRating} onChange={e => setStarRating(e.target.value === '' ? '' : Number(e.target.value))} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all text-[15px]" />
                 </div>
                 <div className="flex-1">
                   <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Reviews Count</label>
-                  <input type="number" value={reviewsCount} onChange={e => setReviewsCount(e.target.value === '' ? '' : Number(e.target.value))} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-[15px]" />
+                  <input type="number" value={reviewsCount} onChange={e => setReviewsCount(e.target.value === '' ? '' : Number(e.target.value))} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all text-[15px]" />
                 </div>
               </div>
 
               {/* Offer Text & Key Features */}
               <div>
                 <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Offer Text (e.g. FLAT 35% OFF)</label>
-                <input type="text" value={offerText} onChange={e => setOfferText(e.target.value)} placeholder="Leave empty for default" className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 text-[15px]" />
+                <input type="text" value={offerText} onChange={e => setOfferText(e.target.value)} placeholder="Leave empty for default" className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all placeholder:text-slate-400 text-[15px]" />
               </div>
 
               <div>
                 <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Key Features (Benefits, one per line or comma separated)</label>
-                <textarea value={keyFeatures} onChange={e => setKeyFeatures(e.target.value)} placeholder="e.g. Brightens Skin&#10;Reduces dark spots" className="w-full h-[100px] p-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-[15px]"></textarea>
+                <textarea value={keyFeatures} onChange={e => setKeyFeatures(e.target.value)} placeholder="e.g. Brightens Skin&#10;Reduces dark spots" className="w-full h-[100px] p-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all resize-none text-[15px]"></textarea>
               </div>
 
               {/* Show on Landing Page */}
@@ -500,7 +500,7 @@ export default function ProductsPage() {
                         checked={showOnLandingPage}
                         disabled={limitReached}
                         onChange={(e) => setShowOnLandingPage(e.target.checked)} 
-                        className={`w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 ${limitReached ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                        className={`w-5 h-5 rounded border-slate-300 text-[#5b3db8] focus:ring-[#5b3db8] ${limitReached ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                       />
                       <label htmlFor="showOnLandingPage" className={`text-[14px] font-bold text-slate-900 ${limitReached ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
                         Show on Landing Page
@@ -530,7 +530,7 @@ export default function ProductsPage() {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed" 
                   />
                   <div className="flex flex-col items-center gap-2 pointer-events-none">
-                    <div className="w-10 h-10 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[#f4f1fb] text-[#5b3db8] rounded-full flex items-center justify-center">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
                     <p className="text-[14px] font-medium text-slate-600">
@@ -557,7 +557,7 @@ export default function ProductsPage() {
                 )}
                 
                 <label className="block text-[13px] font-bold text-slate-900 mb-2.5 mt-4 pt-4 border-t border-slate-100">Or provide Image URLs (comma separated)</label>
-                <input type="text" value={imageUrls} onChange={e => setImageUrls(e.target.value)} placeholder="https://image1.jpg, https://image2.jpg" className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-slate-400 text-[14px]" />
+                <input type="text" value={imageUrls} onChange={e => setImageUrls(e.target.value)} placeholder="https://image1.jpg, https://image2.jpg" className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all placeholder:text-slate-400 text-[14px]" />
               </div>
             </div>
 
@@ -566,7 +566,7 @@ export default function ProductsPage() {
               <button 
                 onClick={handleSubmit}
                 disabled={saving}
-                className={`w-full ${editingId ? 'bg-[#10b981] hover:bg-emerald-600' : 'bg-[#3b60f6] hover:bg-blue-700'} text-white h-[50px] rounded-[12px] font-bold text-[16px] transition-colors shadow-sm ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`w-full ${editingId ? 'bg-[#10b981] hover:bg-emerald-600' : 'bg-[#5b3db8] hover:bg-[#4a2f96]'} text-white h-[50px] rounded-[12px] font-bold text-[16px] transition-colors shadow-sm ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 {saving ? 'Saving...' : (editingId ? 'Update Product' : 'Create Product')}
               </button>

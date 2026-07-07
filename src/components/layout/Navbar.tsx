@@ -14,8 +14,6 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
   else if (pathname.includes('/categories')) title = 'Categories';
   else if (pathname.includes('/orders')) title = 'Orders';
   else if (pathname.includes('/banners')) title = 'Banners';
-  else if (pathname.includes('/coupons')) title = 'Coupons';
-  else if (pathname.includes('/testimonials')) title = 'Testimonials';
   else if (pathname.includes('/customers')) title = 'Customers';
 
   return (
@@ -37,7 +35,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
 
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-[14px] bg-[#3b60f6] text-white flex items-center justify-center text-lg lg:text-xl font-bold shadow-sm">
+          <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-[14px] bg-[#5b3db8] text-white flex items-center justify-center text-lg lg:text-xl font-bold shadow-sm">
             S
           </div>
           <div className="flex-col hidden sm:flex">

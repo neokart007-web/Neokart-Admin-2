@@ -91,10 +91,10 @@ export default function ContactsPage() {
         
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-[18px] font-bold text-slate-800 flex items-center gap-2">
-            <Mail className="text-blue-500" size={24} />
+            <Mail className="text-[#5b3db8]" size={24} />
             Contact Form Submissions
           </h2>
-          <div className="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-sm font-semibold">
+          <div className="bg-[#f4f1fb] text-[#5b3db8] px-4 py-1.5 rounded-full text-sm font-semibold">
             {contacts.length} Total
           </div>
         </div>
@@ -113,13 +113,13 @@ export default function ContactsPage() {
                 className={`relative rounded-2xl p-6 border transition-all duration-200 ${
                   contact.isRead 
                     ? 'bg-slate-50 border-slate-200/60' 
-                    : 'bg-white border-blue-200 shadow-[0_4px_20px_-4px_rgba(59,130,246,0.1)]'
+                    : 'bg-white border-[#d5c9f0] shadow-[0_4px_20px_-4px_rgba(59,130,246,0.1)]'
                 }`}
               >
                 {!contact.isRead && (
                   <span className="absolute -top-2 -right-2 flex h-4 w-4">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8b6fd6] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-4 w-4 bg-[#5b3db8]"></span>
                   </span>
                 )}
                 
@@ -128,12 +128,12 @@ export default function ContactsPage() {
                     <h3 className="font-bold text-slate-900 text-lg">{contact.name}</h3>
                     <div className="flex items-center gap-1.5 text-slate-500 text-sm mt-1">
                       <Mail size={14} />
-                      <a href={`mailto:${contact.email}`} className="hover:text-blue-600 hover:underline">{contact.email}</a>
+                      <a href={`mailto:${contact.email}`} className="hover:text-[#5b3db8] hover:underline">{contact.email}</a>
                     </div>
                     {contact.phone && (
                       <div className="flex items-center gap-1.5 text-slate-500 text-sm mt-1">
                         <Phone size={14} />
-                        <a href={`tel:${contact.phone}`} className="hover:text-blue-600 hover:underline">{contact.phone}</a>
+                        <a href={`tel:${contact.phone}`} className="hover:text-[#5b3db8] hover:underline">{contact.phone}</a>
                       </div>
                     )}
                   </div>
@@ -158,7 +158,7 @@ export default function ContactsPage() {
                   {!contact.isRead ? (
                     <button 
                       onClick={() => handleMarkAsRead(contact._id)}
-                      className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+                      className="flex-1 bg-[#f4f1fb] hover:bg-[#ece7f8] text-[#5b3db8] px-4 py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
                     >
                       <Check size={16} /> Mark as Read
                     </button>

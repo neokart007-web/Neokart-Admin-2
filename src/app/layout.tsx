@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Heedy Admin",
-  description: "Admin panel for Heedy platform",
+  title: "NeoKart Admin",
+  description: "Admin panel for NeoKart platform",
 };
 
 export default function RootLayout({

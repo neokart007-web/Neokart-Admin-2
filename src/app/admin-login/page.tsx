@@ -64,21 +64,21 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-[#131B2A] flex items-center justify-center p-4 font-sans relative overflow-hidden">
       {/* Background glow effects */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#2563eb]/5 blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-[#2563eb]/5 blur-[120px] pointer-events-none"></div>
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[#5b3db8]/5 blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-[#5b3db8]/5 blur-[120px] pointer-events-none"></div>
 
       {/* Login Card */}
       <div className="w-full max-w-[420px] bg-[#1E2536] rounded-[24px] p-10 shadow-2xl relative z-10 border border-white/[0.05]">
 
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
-          <div className="w-[64px] h-[64px] bg-gradient-to-tr from-[#1d4ed8] to-[#3b82f6] rounded-[20px] flex items-center justify-center mb-6 shadow-lg shadow-blue-500/20">
+          <div className="w-[64px] h-[64px] bg-gradient-to-tr from-[#4a2f96] to-[#5b3db8] rounded-[20px] flex items-center justify-center mb-6 shadow-lg shadow-[#5b3db8]/20">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
               <polyline points="9 12 11 14 15 10"></polyline>
             </svg>
           </div>
-          <h1 className="text-white text-[28px] font-bold tracking-tight mb-2">Heedy Admin</h1>
+          <h1 className="text-white text-[28px] font-bold tracking-tight mb-2">NeoKart Admin</h1>
           <p className="text-slate-400 text-[14px]">Secure Management Portal Access</p>
         </div>
 
@@ -103,7 +103,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setFieldErrors(prev => ({...prev, email: undefined})); }}
                 placeholder="Enter your email"
-                className={`w-full h-[52px] bg-[#2A344A] text-white placeholder-slate-500 rounded-[14px] pl-11 pr-4 border focus:bg-[#2A344A] focus:outline-none focus:ring-1 focus:ring-[#3b82f6] transition-all text-[15px] ${fieldErrors.email ? 'border-red-500 focus:border-red-500' : 'border-transparent focus:border-[#3b82f6]'}`}
+                className={`w-full h-[52px] bg-[#2A344A] text-white placeholder-slate-500 rounded-[14px] pl-11 pr-4 border focus:bg-[#2A344A] focus:outline-none focus:ring-1 focus:ring-[#5b3db8] transition-all text-[15px] ${fieldErrors.email ? 'border-red-500 focus:border-red-500' : 'border-transparent focus:border-[#5b3db8]'}`}
               />
             </div>
             {fieldErrors.email && <p className="text-red-400 text-xs mt-1.5 font-medium">{fieldErrors.email}</p>}
@@ -121,7 +121,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setFieldErrors(prev => ({...prev, password: undefined})); }}
                 placeholder="••••••••"
-                className={`w-full h-[52px] bg-[#2A344A] text-white placeholder-slate-500 rounded-[14px] pl-11 pr-11 border focus:bg-[#2A344A] focus:outline-none focus:ring-1 focus:ring-[#3b82f6] transition-all text-[15px] ${fieldErrors.password ? 'border-red-500 focus:border-red-500' : 'border-transparent focus:border-[#3b82f6]'}`}
+                className={`w-full h-[52px] bg-[#2A344A] text-white placeholder-slate-500 rounded-[14px] pl-11 pr-11 border focus:bg-[#2A344A] focus:outline-none focus:ring-1 focus:ring-[#5b3db8] transition-all text-[15px] ${fieldErrors.password ? 'border-red-500 focus:border-red-500' : 'border-transparent focus:border-[#5b3db8]'}`}
               />
               <button
                 type="button"
@@ -143,7 +143,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full h-[52px] bg-[#3b82f6] hover:bg-[#2563eb] text-white rounded-[14px] font-bold text-[15px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-500/25 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`w-full h-[52px] bg-[#5b3db8] hover:bg-[#5b3db8] text-white rounded-[14px] font-bold text-[15px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#5b3db8]/25 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
               {loading ? 'Authenticating...' : 'Access Dashboard'}
               {!loading && <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>}
@@ -155,7 +155,7 @@ export default function AdminLoginPage() {
         {/* Footer */}
         <div className="mt-10 pt-8 border-t border-slate-700/50 flex flex-col items-center gap-4">
           <p className="text-slate-500 text-[11px] font-semibold tracking-wider uppercase">
-            © 2026 Heedy Luxury Cosmetics
+            © 2026 NeoKart Luxury Cosmetics
           </p>
           <div className="bg-[#064e3b]/30 text-[#10b981] px-4 py-1.5 rounded-full text-[10px] font-bold tracking-widest uppercase border border-[#064e3b]/50">
             256-BIT AES ENCRYPTED SESSION
