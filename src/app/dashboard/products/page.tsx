@@ -17,8 +17,6 @@ interface IProduct {
   category: string;
   description: string;
   variants: IVariant[];
-  starRating: number;
-  reviewsCount: number;
   offerText?: string;
   keyFeatures?: string;
   images: string[];
@@ -40,8 +38,6 @@ export default function ProductsPage() {
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
-  const [starRating, setStarRating] = useState<number | ''>(5);
-  const [reviewsCount, setReviewsCount] = useState<number | ''>(0);
   const [offerText, setOfferText] = useState('');
   const [keyFeatures, setKeyFeatures] = useState('');
   const [showOnLandingPage, setShowOnLandingPage] = useState(false);
@@ -92,8 +88,6 @@ export default function ProductsPage() {
     const activeCategories = dbCategories.filter(c => c.status === 'ACTIVE');
     setCategory(activeCategories.length > 0 ? activeCategories[0].name : '');
     setDescription('');
-    setStarRating(5);
-    setReviewsCount(0);
     setOfferText('');
     setKeyFeatures('');
     setShowOnLandingPage(false);
@@ -109,8 +103,6 @@ export default function ProductsPage() {
     setName(product.name);
     setCategory(product.category);
     setDescription(product.description);
-    setStarRating(product.starRating);
-    setReviewsCount(product.reviewsCount);
     setOfferText(product.offerText || '');
     setKeyFeatures(product.keyFeatures || '');
     setShowOnLandingPage(product.showOnLandingPage || false);
@@ -184,9 +176,6 @@ export default function ProductsPage() {
       }
       }
 
-    if (starRating !== '' && (starRating < 0 || starRating > 5)) return toast.error("Star Rating must be between 0 and 5.");
-    if (reviewsCount !== '' && reviewsCount < 0) return toast.error("Reviews Count cannot be negative.");
-
     setSaving(true);
     const token = localStorage.getItem('adminToken');
     
@@ -195,8 +184,6 @@ export default function ProductsPage() {
     formData.append('category', category);
     formData.append('description', description);
     formData.append('variants', JSON.stringify(variants));
-    formData.append('starRating', String(starRating === '' ? 0 : starRating));
-    formData.append('reviewsCount', String(reviewsCount === '' ? 0 : reviewsCount));
     formData.append('offerText', offerText);
     formData.append('keyFeatures', keyFeatures);
     formData.append('showOnLandingPage', String(showOnLandingPage));
@@ -462,18 +449,6 @@ export default function ProductsPage() {
               <div>
                 <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Description</label>
                 <textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full h-[120px] p-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all resize-none text-[15px]"></textarea>
-              </div>
-
-              {/* Star Rating & Reviews */}
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Star Rating</label>
-                  <input type="number" max="5" min="0" step="0.1" value={starRating} onChange={e => setStarRating(e.target.value === '' ? '' : Number(e.target.value))} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all text-[15px]" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-[14px] font-bold text-slate-900 mb-2.5">Reviews Count</label>
-                  <input type="number" value={reviewsCount} onChange={e => setReviewsCount(e.target.value === '' ? '' : Number(e.target.value))} className="w-full h-[50px] px-4 rounded-[12px] border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all text-[15px]" />
-                </div>
               </div>
 
               {/* Offer Text & Key Features */}
