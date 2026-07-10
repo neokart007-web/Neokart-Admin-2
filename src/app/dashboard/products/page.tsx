@@ -9,6 +9,16 @@ interface IVariant {
   volume: string;
   price: number;
   oldPrice?: number;
+  color?: string;
+  images?: string[];        // existing image URLs (from server)
+  _files?: File[];          // newly selected uploads (client only)
+  _previews?: string[];     // object URLs for previews (client only)
+}
+
+// General product option (e.g. Color, Size) and its selectable values
+interface IVariance {
+  name: string;
+  values: string[];
 }
 
 interface IProduct {
@@ -17,12 +27,23 @@ interface IProduct {
   category: string;
   description: string;
   variants: IVariant[];
+  variances?: IVariance[];
   offerText?: string;
   keyFeatures?: string;
   images: string[];
   status: string;
   showOnLandingPage?: boolean;
 }
+
+// Resolve a stored image path (Cloudinary URL or local /uploads/ path) to a displayable URL
+const resolveImageUrl = (url: string) => {
+  if (!url) return 'https://via.placeholder.com/50';
+  if (url.startsWith('/uploads/')) {
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000';
+    return `${baseUrl}${url}`;
+  }
+  return url;
+};
 
 export default function ProductsPage() {
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
@@ -45,6 +66,7 @@ export default function ProductsPage() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [variants, setVariants] = useState<IVariant[]>([{ volume: '1', price: 0, oldPrice: 0 }]);
+  const [variances, setVariances] = useState<IVariance[]>([]);
 
   // Fetch Products
   const fetchProducts = async () => {
@@ -94,7 +116,8 @@ export default function ProductsPage() {
     setImageUrls('');
     setImageFiles([]);
     setPreviewUrls([]);
-    setVariants([{ volume: '1', price: 0, oldPrice: 0 }]);
+    setVariants([{ volume: '1', price: 0, oldPrice: 0, color: '', images: [], _files: [], _previews: [] }]);
+    setVariances([]);
     setIsAddProductOpen(true);
   };
 
@@ -114,13 +137,23 @@ export default function ProductsPage() {
     setImageFiles([]);
     setPreviewUrls([]);
     // Provide a deep copy of variants to prevent mutating original state directly
-    setVariants(product.variants.map(v => ({ volume: v.volume, price: v.price, oldPrice: v.oldPrice })));
+    setVariants(product.variants.map(v => ({
+      volume: v.volume,
+      price: v.price,
+      oldPrice: v.oldPrice,
+      color: v.color || '',
+      images: [...(v.images || [])],
+      _files: [],
+      _previews: [],
+    })));
+    // Deep copy variances so we don't mutate original state
+    setVariances((product.variances || []).map(v => ({ name: v.name, values: [...v.values] })));
     setIsAddProductOpen(true);
   };
 
   // Handle Add Variant
   const handleAddVariant = () => {
-    setVariants([...variants, { volume: '2', price: 0, oldPrice: 0 }]);
+    setVariants([...variants, { volume: '2', price: 0, oldPrice: 0, color: '', images: [], _files: [], _previews: [] }]);
   };
 
   const handleVariantChange = (index: number, field: keyof IVariant, value: string | number) => {
@@ -132,6 +165,89 @@ export default function ProductsPage() {
   const handleRemoveVariant = (index: number) => {
     const newVariants = variants.filter((_, i) => i !== index);
     setVariants(newVariants);
+  };
+
+  // Add uploaded image files to a specific variant (max 5 per variant)
+  const handleVariantImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const newFiles = Array.from(e.target.files);
+    const variant = variants[index];
+    const currentCount = (variant.images?.length || 0) + (variant._files?.length || 0);
+    if (currentCount + newFiles.length > 5) {
+      toast.error('Each variant can have a maximum of 5 images.');
+      e.target.value = '';
+      return;
+    }
+    const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+    const next = [...variants];
+    next[index] = {
+      ...variant,
+      _files: [...(variant._files || []), ...newFiles],
+      _previews: [...(variant._previews || []), ...newPreviews],
+    };
+    setVariants(next);
+    e.target.value = '';
+  };
+
+  // Remove a not-yet-uploaded file from a variant
+  const removeVariantFile = (index: number, fileIdx: number) => {
+    const next = [...variants];
+    const variant = next[index];
+    const files = [...(variant._files || [])];
+    const previews = [...(variant._previews || [])];
+    URL.revokeObjectURL(previews[fileIdx]);
+    files.splice(fileIdx, 1);
+    previews.splice(fileIdx, 1);
+    next[index] = { ...variant, _files: files, _previews: previews };
+    setVariants(next);
+  };
+
+  // Remove an already-saved image URL from a variant
+  const removeVariantExistingImage = (index: number, imgIdx: number) => {
+    const next = [...variants];
+    const variant = next[index];
+    const images = [...(variant.images || [])];
+    images.splice(imgIdx, 1);
+    next[index] = { ...variant, images };
+    setVariants(next);
+  };
+
+  // Variance (general options like Color, Size) handlers
+  const handleAddVariance = () => {
+    setVariances([...variances, { name: '', values: [''] }]);
+  };
+
+  const handleRemoveVariance = (index: number) => {
+    setVariances(variances.filter((_, i) => i !== index));
+  };
+
+  const handleVarianceNameChange = (index: number, value: string) => {
+    const next = [...variances];
+    next[index] = { ...next[index], name: value };
+    setVariances(next);
+  };
+
+  const handleAddVarianceValue = (varianceIndex: number) => {
+    const next = [...variances];
+    next[varianceIndex] = { ...next[varianceIndex], values: [...next[varianceIndex].values, ''] };
+    setVariances(next);
+  };
+
+  const handleVarianceValueChange = (varianceIndex: number, valueIndex: number, value: string) => {
+    const next = [...variances];
+    const newValues = [...next[varianceIndex].values];
+    newValues[valueIndex] = value;
+    next[varianceIndex] = { ...next[varianceIndex], values: newValues };
+    setVariances(next);
+  };
+
+  const handleRemoveVarianceValue = (varianceIndex: number, valueIndex: number) => {
+    const next = [...variances];
+    next[varianceIndex] = {
+      ...next[varianceIndex],
+      values: next[varianceIndex].values.filter((_, i) => i !== valueIndex),
+    };
+    setVariances(next);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -176,14 +292,33 @@ export default function ProductsPage() {
       }
       }
 
+    // Clean up variances: drop unnamed options and blank values
+    const cleanedVariances = variances
+      .map(v => ({ name: v.name.trim(), values: v.values.map(val => val.trim()).filter(Boolean) }))
+      .filter(v => v.name && v.values.length > 0);
+
     setSaving(true);
     const token = localStorage.getItem('adminToken');
-    
+
     const formData = new FormData();
     formData.append('name', name);
     formData.append('category', category);
     formData.append('description', description);
-    formData.append('variants', JSON.stringify(variants));
+    // Strip client-only fields (_files/_previews) from the variants JSON; keep existing image URLs
+    const variantsPayload = variants.map(v => ({
+      volume: v.volume,
+      price: v.price,
+      oldPrice: v.oldPrice,
+      color: v.color?.trim() || '',
+      images: v.images || [],
+    }));
+    formData.append('variants', JSON.stringify(variantsPayload));
+    formData.append('variances', JSON.stringify(cleanedVariances));
+
+    // Attach each variant's newly uploaded files under variantImages_<index>
+    variants.forEach((v, i) => {
+      (v._files || []).forEach(file => formData.append(`variantImages_${i}`, file));
+    });
     formData.append('offerText', offerText);
     formData.append('keyFeatures', keyFeatures);
     formData.append('showOnLandingPage', String(showOnLandingPage));
@@ -303,20 +438,10 @@ export default function ProductsPage() {
                 ) : products.length === 0 ? (
                   <tr><td colSpan={7} className="py-8 text-center text-slate-500">No products found. Add your first product!</td></tr>
                 ) : products.map((product) => {
-                  const getImageUrl = (url: string) => {
-                    if (!url) return 'https://via.placeholder.com/50';
-                    if (url.startsWith('/uploads/')) {
-                      // Backend URL is usually something like http://localhost:5000/api, so we remove /api
-                      const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000';
-                      return `${baseUrl}${url}`;
-                    }
-                    return url;
-                  };
-
                   return (
                   <tr key={product._id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
                     <td className="py-5 px-6">
-                      <img src={getImageUrl(product.images[0])} alt={product.name} className="w-[50px] h-[50px] rounded-[10px] object-cover bg-slate-100" />
+                      <img src={resolveImageUrl(product.images[0])} alt={product.name} className="w-[50px] h-[50px] rounded-[10px] object-cover bg-slate-100" />
                     </td>
                     <td className="py-5 px-6 text-[15px] font-bold text-[#111827] leading-snug pr-8">{product.name}</td>
                     <td className="py-5 px-6 text-[15px] font-medium text-slate-600">{product.category}</td>
@@ -421,9 +546,10 @@ export default function ProductsPage() {
                 <div className="space-y-3">
                   {variants.map((v, i) => {
                     const priceError = !!(v.oldPrice && v.oldPrice > 0 && v.oldPrice < v.price);
+                    const variantImageCount = (v.images?.length || 0) + (v._files?.length || 0);
                     return (
-                      <div key={i} className="flex flex-col gap-1">
-                        <div className={`flex gap-2 items-center bg-slate-50 p-2 rounded-[12px] border ${priceError ? 'border-red-200' : 'border-slate-100'}`}>
+                      <div key={i} className={`flex flex-col gap-2 bg-slate-50 p-2.5 rounded-[12px] border ${priceError ? 'border-red-200' : 'border-slate-100'}`}>
+                        <div className="flex gap-2 items-center">
                           <input type="text" placeholder="e.g. 1" value={v.volume} onChange={(e) => handleVariantChange(i, 'volume', e.target.value)} className="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8] outline-none text-[14px] transition-all bg-white" />
                           <input type="number" placeholder="₹ Offer" value={v.price === 0 ? '' : v.price} onChange={(e) => handleVariantChange(i, 'price', Number(e.target.value))} className={`flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border outline-none text-[14px] transition-all bg-white ${priceError ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-red-600 bg-red-50/30' : 'border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8]'}`} />
                           <input type="number" placeholder="₹ Actual" value={v.oldPrice === 0 ? '' : v.oldPrice} onChange={(e) => handleVariantChange(i, 'oldPrice', Number(e.target.value))} className={`flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border outline-none text-[14px] transition-all bg-white ${priceError ? 'border-red-400 focus:border-red-500 focus:ring-1 focus:ring-red-500 text-red-600 bg-red-50/30' : 'border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8]'}`} />
@@ -435,14 +561,124 @@ export default function ProductsPage() {
                           )}
                         </div>
                         {priceError && (
-                          <span className="text-[12px] font-bold text-red-500 ml-2 animate-in fade-in slide-in-from-top-1">
+                          <span className="text-[12px] font-bold text-red-500 ml-1 animate-in fade-in slide-in-from-top-1">
                             Actual Price cannot be less than Offer Price
                           </span>
                         )}
+
+                        {/* Variant colour */}
+                        <div className="flex items-center gap-2">
+                          <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(v.color || '') ? v.color : '#000000'} onChange={(e) => handleVariantChange(i, 'color', e.target.value)} className="w-[42px] h-[42px] shrink-0 rounded-[8px] border border-slate-200 bg-white cursor-pointer p-1" title="Pick colour" />
+                          <input type="text" placeholder="Colour (e.g. Red or #ff0000)" value={v.color || ''} onChange={(e) => handleVariantChange(i, 'color', e.target.value)} className="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8] outline-none text-[14px] transition-all bg-white" />
+                        </div>
+
+                        {/* Variant images */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Variant Images</span>
+                            <span className="text-[11px] font-medium text-slate-400">{variantImageCount}/5</span>
+                          </div>
+                          {variantImageCount > 0 && (
+                            <div className="grid grid-cols-5 gap-2 mb-2">
+                              {(v.images || []).map((url, imgIdx) => (
+                                <div key={`e-${imgIdx}`} className="relative aspect-square rounded-[8px] overflow-hidden border border-slate-200 group">
+                                  <img src={resolveImageUrl(url)} alt={`Variant ${i + 1} image ${imgIdx + 1}`} className="w-full h-full object-cover" />
+                                  <button onClick={() => removeVariantExistingImage(i, imgIdx)} className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                  </button>
+                                </div>
+                              ))}
+                              {(v._previews || []).map((url, fileIdx) => (
+                                <div key={`n-${fileIdx}`} className="relative aspect-square rounded-[8px] overflow-hidden border border-slate-200 group">
+                                  <img src={url} alt={`New variant ${i + 1} image ${fileIdx + 1}`} className="w-full h-full object-cover" />
+                                  <button onClick={() => removeVariantFile(i, fileIdx)} className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <div className="border-2 border-dashed border-slate-200 rounded-[8px] py-3 text-center hover:bg-white transition-colors relative bg-white/50">
+                            <input type="file" multiple accept="image/*" onChange={(e) => handleVariantImageChange(i, e)} disabled={variantImageCount >= 5} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed" />
+                            <span className="text-[12px] font-medium text-slate-500 pointer-events-none">
+                              {variantImageCount >= 5 ? 'Maximum 5 images' : '+ Upload variant images'}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     );
                   })}
                 </div>
+              </div>
+
+              {/* Product Variances (General Options e.g. Color, Size) */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-[14px] font-bold text-slate-900">Variances (Options)</label>
+                  <button onClick={handleAddVariance} className="bg-[#5b3db8] hover:bg-[#4a2f96] text-white px-3 py-1.5 rounded-[8px] text-[13px] font-semibold flex items-center gap-1.5 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Add Option
+                  </button>
+                </div>
+                <p className="text-[12px] text-slate-400 mb-4">General options like Colour, Size, etc. Add an option name and its available values.</p>
+
+                {variances.length === 0 ? (
+                  <div className="text-[13px] text-slate-400 bg-slate-50 border border-dashed border-slate-200 rounded-[12px] py-4 text-center">
+                    No options added. Click &ldquo;Add Option&rdquo; to add colours, sizes, etc.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {variances.map((variance, vi) => (
+                      <div key={vi} className="bg-slate-50 p-3 rounded-[12px] border border-slate-100">
+                        {/* Option name row */}
+                        <div className="flex gap-2 items-center mb-3">
+                          <input
+                            type="text"
+                            list="variance-name-suggestions"
+                            placeholder="Option name (e.g. Colour, Size)"
+                            value={variance.name}
+                            onChange={(e) => handleVarianceNameChange(vi, e.target.value)}
+                            className="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8] outline-none text-[14px] font-semibold transition-all bg-white"
+                          />
+                          <button onClick={() => handleRemoveVariance(vi)} className="w-8 h-[42px] shrink-0 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-[8px] transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                          </button>
+                        </div>
+
+                        {/* Values */}
+                        <div className="space-y-2">
+                          {variance.values.map((val, valIdx) => (
+                            <div key={valIdx} className="flex gap-2 items-center">
+                              <input
+                                type="text"
+                                placeholder={`Value ${valIdx + 1} (e.g. Red, Large)`}
+                                value={val}
+                                onChange={(e) => handleVarianceValueChange(vi, valIdx, e.target.value)}
+                                className="flex-1 min-w-0 h-[38px] px-3 rounded-[8px] border border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8] outline-none text-[14px] transition-all bg-white"
+                              />
+                              {variance.values.length > 1 && (
+                                <button onClick={() => handleRemoveVarianceValue(vi, valIdx)} className="w-7 h-[38px] shrink-0 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-[8px] transition-colors">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                        <button onClick={() => handleAddVarianceValue(vi)} className="mt-3 text-[13px] font-semibold text-[#5b3db8] hover:text-[#4a2f96] flex items-center gap-1 transition-colors">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                          Add Value
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <datalist id="variance-name-suggestions">
+                  <option value="Colour" />
+                  <option value="Size" />
+                  <option value="Material" />
+                  <option value="Storage" />
+                </datalist>
               </div>
 
               {/* Description */}
