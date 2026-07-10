@@ -15,19 +15,12 @@ interface IVariant {
   _previews?: string[];     // object URLs for previews (client only)
 }
 
-// General product option (e.g. Color, Size) and its selectable values
-interface IVariance {
-  name: string;
-  values: string[];
-}
-
 interface IProduct {
   _id: string;
   name: string;
   category: string;
   description: string;
   variants: IVariant[];
-  variances?: IVariance[];
   offerText?: string;
   keyFeatures?: string;
   images: string[];
@@ -66,7 +59,6 @@ export default function ProductsPage() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [variants, setVariants] = useState<IVariant[]>([{ volume: '1', price: 0, oldPrice: 0 }]);
-  const [variances, setVariances] = useState<IVariance[]>([]);
 
   // Fetch Products
   const fetchProducts = async () => {
@@ -117,7 +109,6 @@ export default function ProductsPage() {
     setImageFiles([]);
     setPreviewUrls([]);
     setVariants([{ volume: '1', price: 0, oldPrice: 0, color: '', images: [], _files: [], _previews: [] }]);
-    setVariances([]);
     setIsAddProductOpen(true);
   };
 
@@ -146,8 +137,6 @@ export default function ProductsPage() {
       _files: [],
       _previews: [],
     })));
-    // Deep copy variances so we don't mutate original state
-    setVariances((product.variances || []).map(v => ({ name: v.name, values: [...v.values] })));
     setIsAddProductOpen(true);
   };
 
@@ -212,44 +201,6 @@ export default function ProductsPage() {
     setVariants(next);
   };
 
-  // Variance (general options like Color, Size) handlers
-  const handleAddVariance = () => {
-    setVariances([...variances, { name: '', values: [''] }]);
-  };
-
-  const handleRemoveVariance = (index: number) => {
-    setVariances(variances.filter((_, i) => i !== index));
-  };
-
-  const handleVarianceNameChange = (index: number, value: string) => {
-    const next = [...variances];
-    next[index] = { ...next[index], name: value };
-    setVariances(next);
-  };
-
-  const handleAddVarianceValue = (varianceIndex: number) => {
-    const next = [...variances];
-    next[varianceIndex] = { ...next[varianceIndex], values: [...next[varianceIndex].values, ''] };
-    setVariances(next);
-  };
-
-  const handleVarianceValueChange = (varianceIndex: number, valueIndex: number, value: string) => {
-    const next = [...variances];
-    const newValues = [...next[varianceIndex].values];
-    newValues[valueIndex] = value;
-    next[varianceIndex] = { ...next[varianceIndex], values: newValues };
-    setVariances(next);
-  };
-
-  const handleRemoveVarianceValue = (varianceIndex: number, valueIndex: number) => {
-    const next = [...variances];
-    next[varianceIndex] = {
-      ...next[varianceIndex],
-      values: next[varianceIndex].values.filter((_, i) => i !== valueIndex),
-    };
-    setVariances(next);
-  };
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
@@ -292,11 +243,6 @@ export default function ProductsPage() {
       }
       }
 
-    // Clean up variances: drop unnamed options and blank values
-    const cleanedVariances = variances
-      .map(v => ({ name: v.name.trim(), values: v.values.map(val => val.trim()).filter(Boolean) }))
-      .filter(v => v.name && v.values.length > 0);
-
     setSaving(true);
     const token = localStorage.getItem('adminToken');
 
@@ -313,7 +259,6 @@ export default function ProductsPage() {
       images: v.images || [],
     }));
     formData.append('variants', JSON.stringify(variantsPayload));
-    formData.append('variances', JSON.stringify(cleanedVariances));
 
     // Attach each variant's newly uploaded files under variantImages_<index>
     variants.forEach((v, i) => {
@@ -609,76 +554,6 @@ export default function ProductsPage() {
                     );
                   })}
                 </div>
-              </div>
-
-              {/* Product Variances (General Options e.g. Color, Size) */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-[14px] font-bold text-slate-900">Variances (Options)</label>
-                  <button onClick={handleAddVariance} className="bg-[#5b3db8] hover:bg-[#4a2f96] text-white px-3 py-1.5 rounded-[8px] text-[13px] font-semibold flex items-center gap-1.5 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    Add Option
-                  </button>
-                </div>
-                <p className="text-[12px] text-slate-400 mb-4">General options like Colour, Size, etc. Add an option name and its available values.</p>
-
-                {variances.length === 0 ? (
-                  <div className="text-[13px] text-slate-400 bg-slate-50 border border-dashed border-slate-200 rounded-[12px] py-4 text-center">
-                    No options added. Click &ldquo;Add Option&rdquo; to add colours, sizes, etc.
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {variances.map((variance, vi) => (
-                      <div key={vi} className="bg-slate-50 p-3 rounded-[12px] border border-slate-100">
-                        {/* Option name row */}
-                        <div className="flex gap-2 items-center mb-3">
-                          <input
-                            type="text"
-                            list="variance-name-suggestions"
-                            placeholder="Option name (e.g. Colour, Size)"
-                            value={variance.name}
-                            onChange={(e) => handleVarianceNameChange(vi, e.target.value)}
-                            className="flex-1 min-w-0 h-[42px] px-3 rounded-[8px] border border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8] outline-none text-[14px] font-semibold transition-all bg-white"
-                          />
-                          <button onClick={() => handleRemoveVariance(vi)} className="w-8 h-[42px] shrink-0 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-[8px] transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                          </button>
-                        </div>
-
-                        {/* Values */}
-                        <div className="space-y-2">
-                          {variance.values.map((val, valIdx) => (
-                            <div key={valIdx} className="flex gap-2 items-center">
-                              <input
-                                type="text"
-                                placeholder={`Value ${valIdx + 1} (e.g. Red, Large)`}
-                                value={val}
-                                onChange={(e) => handleVarianceValueChange(vi, valIdx, e.target.value)}
-                                className="flex-1 min-w-0 h-[38px] px-3 rounded-[8px] border border-slate-200 focus:border-[#5b3db8] focus:ring-1 focus:ring-[#5b3db8] outline-none text-[14px] transition-all bg-white"
-                              />
-                              {variance.values.length > 1 && (
-                                <button onClick={() => handleRemoveVarianceValue(vi, valIdx)} className="w-7 h-[38px] shrink-0 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-[8px] transition-colors">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                </button>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-
-                        <button onClick={() => handleAddVarianceValue(vi)} className="mt-3 text-[13px] font-semibold text-[#5b3db8] hover:text-[#4a2f96] flex items-center gap-1 transition-colors">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                          Add Value
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <datalist id="variance-name-suggestions">
-                  <option value="Colour" />
-                  <option value="Size" />
-                  <option value="Material" />
-                  <option value="Storage" />
-                </datalist>
               </div>
 
               {/* Description */}
