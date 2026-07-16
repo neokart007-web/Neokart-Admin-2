@@ -27,8 +27,6 @@ export default function BannersPage() {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [mobileImage, setMobileImage] = useState('');
-  const [mobileImageFile, setMobileImageFile] = useState<File | null>(null);
 
   const fetchBanners = async () => {
     try {
@@ -54,19 +52,15 @@ export default function BannersPage() {
     setDescription('');
     setImage('');
     setImageFile(null);
-    setMobileImage('');
-    setMobileImageFile(null);
     setIsAddBannerOpen(true);
   };
 
   const handleEditClick = (banner: IBanner) => {
     setEditingId(banner._id);
-    setTitle(banner.title);
-    setDescription(banner.description);
+    setTitle(banner.title || '');
+    setDescription(banner.description || '');
     setImage(banner.image);
     setImageFile(null);
-    setMobileImage(banner.mobileImage || '');
-    setMobileImageFile(null);
     setIsAddBannerOpen(true);
   };
 
@@ -74,42 +68,31 @@ export default function BannersPage() {
     setIsAddBannerOpen(false);
     setEditingId(null);
     setImageFile(null);
-    setMobileImageFile(null);
   };
 
   const handleSubmit = async () => {
-    if (!title || !description || (!image && !imageFile) || (!mobileImage && !mobileImageFile)) {
-      return toast.error('Title, description, and both images are required');
+    if (!image && !imageFile) {
+      return toast.error('Banner image is required');
     }
 
     const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 
     if (imageFile && imageFile.size > MAX_FILE_SIZE) {
-      return toast.error('Laptop image size must be less than 3MB');
-    }
-
-    if (mobileImageFile && mobileImageFile.size > MAX_FILE_SIZE) {
-      return toast.error('Phone image size must be less than 3MB');
+      return toast.error('Banner image size must be less than 3MB');
     }
 
     setSaving(true);
     const token = localStorage.getItem('adminToken');
     
     const formData = new FormData();
-    formData.append('title', title);
-    formData.append('description', description);
+    formData.append('title', title || '');
+    formData.append('description', description || '');
     formData.append('status', 'ACTIVE');
     
     if (imageFile) {
       formData.append('image', imageFile);
     } else if (image) {
       formData.append('image', image);
-    }
-    
-    if (mobileImageFile) {
-      formData.append('mobileImage', mobileImageFile);
-    } else if (mobileImage) {
-      formData.append('mobileImage', mobileImage);
     }
 
     try {
@@ -208,26 +191,11 @@ export default function BannersPage() {
                 ) : banners.map((banner) => (
                   <tr key={banner._id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
                     <td className="py-5 px-6">
-                      <div className="flex gap-3">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[10px] text-slate-500 font-semibold uppercase">Laptop</span>
-                          <img 
-                            src={banner.image && banner.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000'}${banner.image}` : banner.image} 
-                            alt={banner.title} 
-                            className="w-[120px] h-[60px] rounded-[8px] object-cover bg-slate-100 shadow-sm border border-slate-200" 
-                          />
-                        </div>
-                        {banner.mobileImage && (
-                          <div className="flex flex-col gap-1">
-                            <span className="text-[10px] text-slate-500 font-semibold uppercase">Mobile</span>
-                            <img 
-                              src={banner.mobileImage.startsWith('/') ? `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000'}${banner.mobileImage}` : banner.mobileImage} 
-                              alt={`${banner.title} mobile`} 
-                              className="w-[40px] h-[60px] rounded-[8px] object-cover bg-slate-100 shadow-sm border border-slate-200" 
-                            />
-                          </div>
-                        )}
-                      </div>
+                      <img 
+                        src={banner.image && banner.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000'}${banner.image}` : banner.image} 
+                        alt={banner.title || 'Banner'} 
+                        className="w-[120px] h-[60px] rounded-[8px] object-cover bg-slate-100 shadow-sm border border-slate-200" 
+                      />
                     </td>
                     <td className="py-5 px-6 font-bold text-[#111827] text-[15px]">{banner.title}</td>
                     <td className="py-5 px-6 text-[15px] text-slate-700 font-medium leading-snug">{banner.description}</td>
@@ -274,7 +242,7 @@ export default function BannersPage() {
             <div className="flex-1 overflow-y-auto px-6 lg:px-8 pb-8 space-y-6 form-scrollbar">
               {/* Banner Title */}
               <div>
-                <label className="block text-[13px] font-bold text-[#111827] mb-2.5">Banner Title</label>
+                <label className="block text-[13px] font-bold text-[#111827] mb-2.5">Banner Title (Optional)</label>
                 <input 
                   type="text" 
                   value={title}
@@ -282,10 +250,10 @@ export default function BannersPage() {
                   className="w-full h-[48px] px-4 rounded-[12px] border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all text-[14px]" 
                 />
               </div>
-
+ 
               {/* Description */}
               <div>
-                <label className="block text-[13px] font-bold text-[#111827] mb-2.5">Description</label>
+                <label className="block text-[13px] font-bold text-[#111827] mb-2.5">Description (Optional)</label>
                 <input 
                   type="text" 
                   value={description}
@@ -293,10 +261,10 @@ export default function BannersPage() {
                   className="w-full h-[48px] px-4 rounded-[12px] border border-slate-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5b3db8]/20 focus:border-[#5b3db8] transition-all text-[14px]" 
                 />
               </div>
-
-              {/* Laptop Image Upload */}
+ 
+              {/* Image Upload */}
               <div>
-                <label className="block text-[13px] font-bold text-[#111827] mb-2.5">Laptop Size Photo</label>
+                <label className="block text-[13px] font-bold text-[#111827] mb-2.5">Banner Image</label>
                 <input 
                   type="file" 
                   accept="image/*"
@@ -326,37 +294,7 @@ export default function BannersPage() {
                 )}
               </div>
 
-              {/* Mobile Image Upload */}
-              <div>
-                <label className="block text-[13px] font-bold text-[#111827] mb-2.5">Phone Size Photo</label>
-                <input 
-                  type="file" 
-                  accept="image/*"
-                  onChange={e => {
-                    if (e.target.files && e.target.files.length > 0) {
-                      const file = e.target.files[0];
-                      if (file.size > 3 * 1024 * 1024) {
-                        toast.error('Image size must be less than 3MB');
-                        e.target.value = '';
-                        return;
-                      }
-                      setMobileImageFile(file);
-                      setMobileImage('');
-                    }
-                  }}
-                  className="w-full text-[14px] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#f4f1fb] file:text-[#5b3db8] hover:file:bg-[#ece7f8] transition-colors cursor-pointer" 
-                />
-                {(mobileImage || mobileImageFile) && (
-                  <div className="mt-4">
-                    <p className="text-[12px] font-semibold text-slate-500 mb-2">Image Preview</p>
-                    <img 
-                      src={mobileImageFile ? URL.createObjectURL(mobileImageFile) : (mobileImage.startsWith('/') ? `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000'}${mobileImage}` : mobileImage)} 
-                      alt="Mobile Preview" 
-                      className="w-[120px] h-[180px] rounded-lg object-cover border border-slate-200 shadow-sm"
-                    />
-                  </div>
-                )}
-              </div>
+              {/* Mobile Image Upload Removed */}
 
               {/* Submit Button */}
               <div className="pt-2">
