@@ -26,6 +26,8 @@ interface IProduct {
   images: string[];
   status: string;
   showOnLandingPage?: boolean;
+  showInFlashSale?: boolean;
+  showAsNewArrival?: boolean;
 }
 
 // Resolve a stored image path (Cloudinary URL or local /uploads/ path) to a displayable URL
@@ -55,6 +57,8 @@ export default function ProductsPage() {
   const [offerText, setOfferText] = useState('');
   const [keyFeatures, setKeyFeatures] = useState('');
   const [showOnLandingPage, setShowOnLandingPage] = useState(false);
+  const [showInFlashSale, setShowInFlashSale] = useState(false);
+  const [showAsNewArrival, setShowAsNewArrival] = useState(false);
   const [imageUrls, setImageUrls] = useState('');
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
@@ -105,6 +109,8 @@ export default function ProductsPage() {
     setOfferText('');
     setKeyFeatures('');
     setShowOnLandingPage(false);
+    setShowInFlashSale(false);
+    setShowAsNewArrival(false);
     setImageUrls('');
     setImageFiles([]);
     setPreviewUrls([]);
@@ -120,6 +126,8 @@ export default function ProductsPage() {
     setOfferText(product.offerText || '');
     setKeyFeatures(product.keyFeatures || '');
     setShowOnLandingPage(product.showOnLandingPage || false);
+    setShowInFlashSale(product.showInFlashSale || false);
+    setShowAsNewArrival(product.showAsNewArrival || false);
     
     const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000';
     const fullImageUrls = product.images.map(url => url.startsWith('/uploads/') ? `${baseUrl}${url}` : url);
@@ -267,6 +275,8 @@ export default function ProductsPage() {
     formData.append('offerText', offerText);
     formData.append('keyFeatures', keyFeatures);
     formData.append('showOnLandingPage', String(showOnLandingPage));
+    formData.append('showInFlashSale', String(showInFlashSale));
+    formData.append('showAsNewArrival', String(showAsNewArrival));
 
     // Convert comma separated images to array
     const imagesArray = imageUrls.split(',').map(url => url.trim()).filter(url => url);
@@ -598,6 +608,44 @@ export default function ProductsPage() {
                   </div>
                 );
               })()}
+
+              {/* Show in Flash Sale */}
+              <div className="flex flex-col gap-1 bg-slate-50 p-4 rounded-[12px] border border-slate-100">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="showInFlashSale"
+                    checked={showInFlashSale}
+                    onChange={(e) => setShowInFlashSale(e.target.checked)}
+                    className="w-5 h-5 rounded border-slate-300 text-[#5b3db8] focus:ring-[#5b3db8] cursor-pointer"
+                  />
+                  <label htmlFor="showInFlashSale" className="text-[14px] font-bold text-slate-900 cursor-pointer">
+                    Show in Flash Sale
+                  </label>
+                </div>
+                <span className="text-[12px] font-medium text-slate-500 ml-8">
+                  Featured under &ldquo;Top Offers You Can&apos;t Miss&rdquo; on the home page. Add an old price to a variant to show the discount %.
+                </span>
+              </div>
+
+              {/* Show as New Arrival */}
+              <div className="flex flex-col gap-1 bg-slate-50 p-4 rounded-[12px] border border-slate-100">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="showAsNewArrival"
+                    checked={showAsNewArrival}
+                    onChange={(e) => setShowAsNewArrival(e.target.checked)}
+                    className="w-5 h-5 rounded border-slate-300 text-[#5b3db8] focus:ring-[#5b3db8] cursor-pointer"
+                  />
+                  <label htmlFor="showAsNewArrival" className="text-[14px] font-bold text-slate-900 cursor-pointer">
+                    Show as New Arrival
+                  </label>
+                </div>
+                <span className="text-[12px] font-medium text-slate-500 ml-8">
+                  Featured in the &ldquo;New Arrival&rdquo; highlight on the home page. If several are selected, the most recent one is shown.
+                </span>
+              </div>
 
               {/* Image URLs & Files */}
               <div>
