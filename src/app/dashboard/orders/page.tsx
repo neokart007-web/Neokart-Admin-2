@@ -26,7 +26,10 @@ interface Order {
   };
   items: OrderItem[];
   shippingAddress: {
+    name?: string;
+    phone?: string;
     street: string;
+    postOffice?: string;
     city: string;
     state: string;
     zipCode: string;
@@ -289,7 +292,10 @@ export default function OrdersPage() {
               <div>
                 <h3 className="text-[16px] font-bold text-[#111827] mb-3">Shipping Address</h3>
                 <div className="space-y-1.5 text-[14px] text-slate-700 font-medium">
+                  {activeOrder.shippingAddress?.name && <p className="font-bold text-[#111827]">{activeOrder.shippingAddress.name}</p>}
+                  {activeOrder.shippingAddress?.phone && <p>📞 {activeOrder.shippingAddress.phone}</p>}
                   {activeOrder.shippingAddress?.street && <p>{activeOrder.shippingAddress.street}</p>}
+                  {activeOrder.shippingAddress?.postOffice && <p>P.O. {activeOrder.shippingAddress.postOffice}</p>}
                   <p>{activeOrder.shippingAddress?.city}{activeOrder.shippingAddress?.state ? `, ${activeOrder.shippingAddress.state}` : ''}</p>
                   <p>{activeOrder.shippingAddress?.zipCode}{activeOrder.shippingAddress?.country ? `, ${activeOrder.shippingAddress.country}` : ''}</p>
                 </div>
