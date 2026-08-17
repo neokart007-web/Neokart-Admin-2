@@ -27,6 +27,8 @@ export default function BannersPage() {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [mobileImage, setMobileImage] = useState('');
+  const [mobileImageFile, setMobileImageFile] = useState<File | null>(null);
 
   const fetchBanners = async () => {
     try {
@@ -52,6 +54,8 @@ export default function BannersPage() {
     setDescription('');
     setImage('');
     setImageFile(null);
+    setMobileImage('');
+    setMobileImageFile(null);
     setIsAddBannerOpen(true);
   };
 
@@ -61,6 +65,8 @@ export default function BannersPage() {
     setDescription(banner.description || '');
     setImage(banner.image);
     setImageFile(null);
+    setMobileImage(banner.mobileImage || '');
+    setMobileImageFile(null);
     setIsAddBannerOpen(true);
   };
 
@@ -68,6 +74,7 @@ export default function BannersPage() {
     setIsAddBannerOpen(false);
     setEditingId(null);
     setImageFile(null);
+    setMobileImageFile(null);
   };
 
   const handleSubmit = async () => {
@@ -79,6 +86,10 @@ export default function BannersPage() {
 
     if (imageFile && imageFile.size > MAX_FILE_SIZE) {
       return toast.error('Banner image size must be less than 3MB');
+    }
+
+    if (mobileImageFile && mobileImageFile.size > MAX_FILE_SIZE) {
+      return toast.error('Mobile banner image size must be less than 3MB');
     }
 
     setSaving(true);
@@ -93,6 +104,12 @@ export default function BannersPage() {
       formData.append('image', imageFile);
     } else if (image) {
       formData.append('image', image);
+    }
+
+    if (mobileImageFile) {
+      formData.append('mobileImage', mobileImageFile);
+    } else if (mobileImage) {
+      formData.append('mobileImage', mobileImage);
     }
 
     try {
@@ -191,11 +208,28 @@ export default function BannersPage() {
                 ) : banners.map((banner) => (
                   <tr key={banner._id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
                     <td className="py-5 px-6">
-                      <img 
-                        src={banner.image && banner.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000'}${banner.image}` : banner.image} 
-                        alt={banner.title || 'Banner'} 
-                        className="w-[120px] h-[60px] rounded-[8px] object-cover bg-slate-100 shadow-sm border border-slate-200" 
-                      />
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={banner.image && banner.image.startsWith('/') ? `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000'}${banner.image}` : banner.image}
+                          alt={banner.title || 'Banner'}
+                          className="w-[120px] h-[60px] rounded-[8px] object-cover bg-slate-100 shadow-sm border border-slate-200"
+                        />
+                        {banner.mobileImage ? (
+                          <img
+                            src={banner.mobileImage.startsWith('/') ? `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000'}${banner.mobileImage}` : banner.mobileImage}
+                            alt="Mobile"
+                            title="Mobile banner"
+                            className="w-[40px] h-[60px] rounded-[8px] object-cover bg-slate-100 shadow-sm border border-slate-200"
+                          />
+                        ) : (
+                          <span
+                            title="No mobile image — hidden on phones"
+                            className="w-[40px] h-[60px] rounded-[8px] border border-dashed border-amber-300 bg-amber-50 text-amber-600 text-[10px] font-semibold flex items-center justify-center text-center leading-tight px-1"
+                          >
+                            No mobile
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="py-5 px-6 font-bold text-[#111827] text-[15px]">{banner.title}</td>
                     <td className="py-5 px-6 text-[15px] text-slate-700 font-medium leading-snug">{banner.description}</td>
@@ -294,7 +328,42 @@ export default function BannersPage() {
                 )}
               </div>
 
-              {/* Mobile Image Upload Removed */}
+              {/* Mobile Image Upload */}
+              <div>
+                <label className="block text-[13px] font-bold text-[#111827] mb-2.5">Mobile Banner Image</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={e => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      const file = e.target.files[0];
+                      if (file.size > 3 * 1024 * 1024) {
+                        toast.error('Image size must be less than 3MB');
+                        e.target.value = '';
+                        return;
+                      }
+                      setMobileImageFile(file);
+                      setMobileImage('');
+                    }
+                  }}
+                  className="w-full text-[14px] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#f4f1fb] file:text-[#5b3db8] hover:file:bg-[#ece7f8] transition-colors cursor-pointer"
+                />
+                {!mobileImage && !mobileImageFile && (
+                  <p className="mt-2 text-[12px] text-amber-600 font-medium leading-snug">
+                    Without a mobile image this banner will not appear on phones.
+                  </p>
+                )}
+                {(mobileImage || mobileImageFile) && (
+                  <div className="mt-4">
+                    <p className="text-[12px] font-semibold text-slate-500 mb-2">Mobile Preview</p>
+                    <img
+                      src={mobileImageFile ? URL.createObjectURL(mobileImageFile) : (mobileImage.startsWith('/') ? `${process.env.NEXT_PUBLIC_BACKEND_URL?.replace('/api', '') || 'http://localhost:5000'}${mobileImage}` : mobileImage)}
+                      alt="Mobile Preview"
+                      className="w-[140px] h-[180px] rounded-lg object-cover border border-slate-200 shadow-sm"
+                    />
+                  </div>
+                )}
+              </div>
 
               {/* Submit Button */}
               <div className="pt-2">
